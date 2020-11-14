@@ -77,7 +77,10 @@ class VoiceAssistant:
             # the first two words are probably 'search up', so we just need to look for whatever the user says afterwards
             # kind of fragile looking code tho LOL
             keywords = ' '.join(keywords) # to turn it from a list into a string
-            url = 'https://google.com/search?q=' + keywords
+            url = 'https://google.com/search?q='
+            if 'picture' in audio_data:
+                url = 'https://www.google.com/search?tbm=isch&q='
+            url += keywords # append keywords at the end
             webbrowser.get().open(url)
 
     # add play music with youtube
