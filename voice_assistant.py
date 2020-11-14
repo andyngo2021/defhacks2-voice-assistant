@@ -68,6 +68,18 @@ class VoiceAssistant:
         audio_data = audio_data.lower() # standardize the string, probably other things i can do to make it better
         if 'hello' in audio_data:
             self.speak('Hello World!')
+            
+        # add internet searching with webbrowser module
+        if 'search up' in audio_data:
+            keywords = audio_data.split()[2:]
+            # the first two words are probably 'search up', so we just need to look for whatever the user says afterwards
+            # kind of fragile looking code tho LOL
+            keywords = ' '.join(keywords) # to turn it from a list into a string
+            url = 'https://google.com/search?q=' + keywords
+            webbrowser.get().open(url)
+
+        # add play music with youtube
+
 
     def run(self):
         self.speak('Hello, how can I help you?')
