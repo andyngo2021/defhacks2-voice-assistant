@@ -5,7 +5,8 @@ import playsound
 import random
 from gtts import gTTS
 import webbrowser
-# make sure to import the youtube class here later
+# custom written modules
+from YTSearch import YouTubeAPI
 
 # class for the voice assistant goes here
 
@@ -44,6 +45,7 @@ class VoiceAssistant:
     
     def listen(self, question=None):
         with sr.Microphone() as source:
+            # not sure if i still need or want to keep the question argument
             if question:
                 self.speak(question)
             audio_data = None
@@ -68,7 +70,7 @@ class VoiceAssistant:
         audio_data = audio_data.lower() # standardize the string, probably other things i can do to make it better
         if 'hello' in audio_data:
             self.speak('Hello World!')
-            
+
         # add internet searching with webbrowser module
         if 'search up' in audio_data:
             keywords = audio_data.split()[2:]
@@ -78,7 +80,18 @@ class VoiceAssistant:
             url = 'https://google.com/search?q=' + keywords
             webbrowser.get().open(url)
 
-        # add play music with youtube
+    # add play music with youtube
+        if 'play' in audio_data and ('song' in audio_data or 'music' in audio_data):
+            self.speak('What do you want me to play?')
+            song_information = self.listen()
+            # need to clean the song_information string later to remove (play and by)
+            yt_player = YouTubeAPI()
+            videoURL = yt_player.SearchForVideo(song_information)
+            webbrowser.get().open(videoURL)
+
+
+
+        
 
 
     def run(self):

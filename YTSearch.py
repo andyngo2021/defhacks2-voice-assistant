@@ -13,15 +13,15 @@ class YouTubeAPI:
             api_key = data[0].strip()
             return str(api_key)
 
-    def SearchForVideo(self, title, author):
+    def SearchForVideo(self, title):
         request = self.youtube.search().list(
             part="snippet",
             maxResults=1,
-            q=f"{title} {author}"
+            q=f"{title}"
         )
         response = request.execute()
         id = response["items"][0]["id"]["videoId"]
-        return id
+        return self.GetYouTubeURL(id)
 
     def GetYouTubeURL(self, id):
         return f'https://youtu.be/{id}'
