@@ -143,7 +143,54 @@ class GoogleCalendarAPI:
                 if (time1 <= time2):
                     return True
         return False
+
+    def ConvertMonthToInt(self, month):
+        month = month.lower()
+        months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+        number = str(months.index(month)+1).zfill(2)
+        return number
+
+    
+    def GetDateTimeFormat(self, month, day, year, time, time_of_day):
+        # return something that looks like this 2015-05-28T09:00:00-08:00
+        minus = '-08:00' # subtract 8 hours from UTC to get PST
+        month = month.zfill(2)
+        day = day.zfill(2)
+        if len(time) == 1:
+            # if it's like just a single digit i want to add a 0 in front
+            time = time.zfill(2)
+        if ':' not in time:
+            time += (':00')
+        if time_of_day == 'p.m.':
+            # 04:43
+            time = str(int(time[0:2])+12) + time[2:]
+            # 16:43
+        if time[0:2] == '12' and time_of_day == 'a.m.':
+            time = '00' + time[2:]
         
+        formatted = f'{year}-{month}-{day}T{time}:00{minus}'
+        return formatted
+        
+
+
+        formatted = f'{year}-{month}-{day}T{time}:00{minus}'
+        pass
+
+    def MakeNewEvent(self, title, month, day, year, start_time, time_of_day, end_time, time_of_end):
+        month = self.ConvertMonthToInt(month)
+        event_data = {
+            'summary': title,
+            'start': {
+                'dateTime': self.GetDateTimeFormat(month, day, year, start_time, time_of_day)
+            },
+            'end': {
+                'dateTime': self.GetDateTimeFormat(month, day, year, end_time, time_of_end)
+            }
+        }
+        event = self.calendar.events().insert(calendarId='primary', body=event_data).execute()
+        print('Event created: %s' % (event.get('htmlLink')))
+        
+    
 
 
 # cal = GoogleCalendarAPI()

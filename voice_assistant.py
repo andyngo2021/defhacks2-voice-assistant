@@ -106,45 +106,64 @@ class VoiceAssistant:
             videoURL = yt_player.SearchForVideo(song_information)
             webbrowser.get().open(videoURL)
 
-        # google calendar poggers
-        elif 'calendar' in audio_data or 'events' in audio_data or 'schedule' in audio_data:
-            self.speak('Here are some upcoming events on your schedule:')
-            self.calendar.PrintCalendarEvents(calendar.GetEvents(calendar.GetCalendarList()[3]))
-            # still need to make it loop through each calendar oops
 
-        elif 'add' in audio_data and 'event' in audio_data and 'calendar' in audio_data:
+        elif 'add event' in audio_data and ('calendar' in audio_data or 'schedule' in audio_data):
             # add an event to my primary calendar
             # need: title, date, start time, end time
             time_of_day = None # am or pm
             time_of_end = None
-            self.speak('What\'s the occassion?')
-            title = self.listen()
-            self.speak('What day does the event happen?')
-            date = self.listen()
-            # test cases:
-            # 'tomorrow' November 10th, November 10, next friday, in two days, etc...
+            good_to_go = False
 
-            self.speak('When does the event start?')
-            start_time = self.listen()
-            # make sure to check if it's AM or PM
-            if 'a.m.' not in start_time or 'p.m.' not in start_time:
-                time_of_day = self.listen()
-            else:
-                if 'a.m.' in start_time:
-                    time_of_day = 'a.m.'
+            while not good_to_go:
+                self.speak('What\'s the occassion?')
+                title = self.listen()
+                self.speak('What day does the event happen?')
+                date = self.listen()
+                # test cases:
+                # 'tomorrow' November 10th, November 10, next friday, in two days, etc...
+                year = '2020'
+                date = date.split(' ')
+                month = date[0]
+                day = date[1].strip('th')
+                self.speak('When does the event start?')
+                start_time = self.listen()
+                # make sure to check if it's AM or PM
+                if start_time[-4:] not in ['a.m.', 'p.m.']:
+                    self.speak('Is that A.M. or P.M.?')
+                    time_of_day = self.listen()
                 else:
-                    time_of_day = 'p.m.'
-            self.speak('When does the event end?')
-            end_time = self.listen()
-            # same as above lol
-            if 'a.m.' not in end_time or 'p.m.' not in end_time:
-                time_of_end = self.listen()
-            else:
-                if 'a.m.' in end_time:
-                    time_of_end = 'a.m.'
+                    time_of_day = start_time[-4:]
+                start_time = start_time.strip(' ' + time_of_day)
+                self.speak('When does the event end?')
+                end_time = self.listen()
+                # same as above lol
+                if end_time[-4:] not in ['a.m.', 'p.m.']:
+                    self.speak('Is that A.M. or P.M.?')
+                    time_of_end = self.listen()
                 else:
-                    time_of_end = 'p.m.'
+                    time_of_end = end_time[-4:]
+                end_time = end_time.strip(' ' + time_of_end)
+                self.speak('Are the following details correct?')
+                self.speak(f'''
+                    Title = {title}
+                    Date = {month} {day}, {year}
+                    Time = {start_time} {time_of_day} - {end_time} {time_of_end}
+                ''')
+                response = self.listen()
+                if 'yes' in response or 'corrrect' in response or 'yep' in response or 'yeah' in response:
+                    good_to_go = True
+                else:
+                    good_to_go = False
+            
+            # now make the calendar event
+            # make event (title, month, day, year, start_time, time_of_day, end_time, time_of_end)
+            self.calendar.MakeNewEvent(title, month, day, year, start_time, time_of_day, end_time, time_of_end)
 
+        # google calendar poggers
+        elif 'calendar' in audio_data or 'upcoming events' in audio_data or 'schedule' in audio_data:
+            self.speak('Here are some upcoming events on your schedule:')
+            self.calendar.PrintCalendarEvents(self.calendar.GetEvents(self.calendar.GetCalendarList()[3]))
+            # still need to make it loop through each calendar oops
 
         # get a joke from pyjokes
         elif 'joke' in audio_data:
