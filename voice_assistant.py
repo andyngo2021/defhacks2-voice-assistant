@@ -25,7 +25,7 @@ Stuff to do:
         - add calendar events
             -make a new event
             -get a list of upcoming events
-            
+        - add multimedia commands (control system volume, next song, previous song, etc.)
 '''
 
 '''
@@ -124,7 +124,7 @@ class VoiceAssistant:
                 self.speak(w.getCurrentWeather())
 
         # might remove later idk
-        elif 'quit' in audio_data:
+        elif 'quit' in audio_data or 'exit' in audio_data:
             exit()
         
 
