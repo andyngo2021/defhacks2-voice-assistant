@@ -23,9 +23,9 @@ Stuff to do:
         - check for unread emails
         - make a reminder
         - add calendar events
-        - weather api 
-        - COVID facts bc why not
-        - canvas api for schoolwork >.<
+            -make a new event
+            -get a list of upcoming events
+            
 '''
 
 '''
@@ -33,6 +33,8 @@ Stuff that's "done" or can be touched up on later:
     - search the internet
     - play music from youtube
     - give me an inspirational quote lol
+    - COVID facts bc why not
+    - weather api 
 '''
 
 class VoiceAssistant:
@@ -61,7 +63,7 @@ class VoiceAssistant:
             audio_data = None
             while audio_data is None:
                 try:
-                    audio = self.recognizer.listen(source, phrase_time_limit=10)
+                    audio = self.recognizer.listen(source, phrase_time_limit=7)
                     # still need to tweak the settings a bit 
                     # try to make it so that it only activates when you speak
                     # timeout = how long the microphone listens for a prompt
@@ -105,7 +107,7 @@ class VoiceAssistant:
             webbrowser.get().open(videoURL)
 
         # get a joke from pyjokes
-        elif 'tell me a joke' in audio_data:
+        elif 'joke' in audio_data:
             self.speak(pyjokes.get_joke())
         
         elif 'quote' in audio_data:
