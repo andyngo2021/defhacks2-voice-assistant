@@ -3,11 +3,12 @@ import pickle
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import googleapiclient.discovery 
+import datetime
 
 class CalendarEvent:
     def __init__(self, title, start, end, location=None):
         self.title = title
-        self.start = start
+        self.start = start # tuple (month, day, year, time, time_of_day)
         self.end = end
         self.location = location
         self.time_frame = self.GetTimeFrame(self.start, self.end)
@@ -37,7 +38,7 @@ class GoogleCalendarAPI:
         self.credentials = None
         self.calendar = None
         self.LoadCredentials()
-
+        
     def LoadCredentials(self):
         if os.path.exists('token.pickle'):
             with open('token.pickle', 'rb') as token:
@@ -71,6 +72,7 @@ class GoogleCalendarAPI:
 
     def GetEvents(self, calendar_info): # calendar info contains name, and ID
         calendar_name, calendar_id = calendar_info
+        calendar_events = []
         page_token = None
         while True:
             events = self.calendar.events().list(calendarId=calendar_id, pageToken=page_token, singleEvents=True, orderBy='startTime').execute()
@@ -81,12 +83,18 @@ class GoogleCalendarAPI:
                 end = self.FormatTime(event['end']['dateTime'])
                 location = event['location']
                 event_data = CalendarEvent(title, start, end, location)
-                print(event_data)
+                if self.CheckIfNotHappenedYet(event_data):
+                    calendar_events.append(event_data)
 
             page_token = events.get('nextPageToken')
             if not page_token:
                 break
-
+        return calendar_events
+    
+    def PrintCalendarEvents(self, calendar_events):
+        for event in calendar_events:
+            print(event)
+    
     def FormatTime(self, data):
         # given in this format: 2020-11-14T08:30:00-08:00
         #                       0123456789
@@ -99,23 +107,44 @@ class GoogleCalendarAPI:
             time_of_day = 'PM'
             formatted_hour = str(int(time[0:2])%12).zfill(2)
             time = formatted_hour + time[2:]
-        elif int(time[0:2] == 00):
-            formatted_hour = 12
+        elif time[0:2] == '00':
+            formatted_hour = '12'
             time = formatted_hour + time[2:]
             
         formatted_data = month, day, year, time, time_of_day
         return formatted_data
 
+    def GetCurrentTime(self):
+        current_time = str(datetime.datetime.now())
+        # 2020-11-15 01:32:16.826450
+        year = current_time[0:4]
+        month = current_time[5:7]
+        day = current_time[8:10]
+        time = current_time[11:16]
+        time_of_day = datetime.datetime.now().strftime('%p')
+        
+        formatted_data = month, day, year, time, time_of_day
+        # return it in a similar way as formatted data
+        return formatted_data
+
     def CheckIfNotHappenedYet(self, event):
         # want to use some date module to check if an event has occured or not
-        pass
+        # the CompareTwoTimes will return true IF first event occurs before the next event
+        return self.CompareTwoTimes(self.GetCurrentTime(), event.start)
+
 
     def CompareTwoTimes(self, time_1, time_2):
         # compare two times to see which one came first
-        # helper function for the CheckIfNOtHappeendYet function
-        pass
+        # helper function for the CheckIfNotHappeendYet function
+        month1, day1, year1, time1, time_of_day1 = time_1
+        month2, day2, year2, time2, time_of_day2 = time_2
+        if month1==month2 and day1==day2 and year1==year2:
+            if (time_of_day1 <= time_of_day2):
+                if (time1 <= time2):
+                    return True
+        return False
         
 
 
 cal = GoogleCalendarAPI()
-cal.GetEvents(cal.GetCalendarList()[3])
+cal.PrintCalendarEvents(cal.GetEvents(cal.GetCalendarList()[3]))
