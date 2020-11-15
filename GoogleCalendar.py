@@ -146,5 +146,5 @@ class GoogleCalendarAPI:
         
 
 
-cal = GoogleCalendarAPI()
-cal.PrintCalendarEvents(cal.GetEvents(cal.GetCalendarList()[3]))
+# cal = GoogleCalendarAPI()
+# cal.PrintCalendarEvents(cal.GetEvents(cal.GetCalendarList()[3]))

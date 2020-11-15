@@ -12,9 +12,8 @@ from YTSearch import YouTubeAPI
 from inspirationalquotes import getInspirationalQuote
 from COVIDstats import USACOVID
 from weatherapi import WeatherAPI
+from GoogleCalendar import GoogleCalendarAPI
 
-
-# class for the voice assistant goes here
 
 '''
 Stuff to do:
@@ -24,7 +23,6 @@ Stuff to do:
         - make a reminder
         - add calendar events
             -make a new event
-            -get a list of upcoming events
         - add multimedia commands (control system volume, next song, previous song, etc.)
 '''
 
@@ -35,12 +33,14 @@ Stuff that's "done" or can be touched up on later:
     - give me an inspirational quote lol
     - COVID facts bc why not
     - weather api 
+    -get a list of upcoming events
 '''
 
 class VoiceAssistant:
     def __init__(self, name, mode):
         self.name = name
         self.recognizer = sr.Recognizer()
+        self.calendar = GoogleCalendarAPI()
         
         self.mode = mode
         if self.mode == 1:
@@ -105,6 +105,46 @@ class VoiceAssistant:
             yt_player = YouTubeAPI()
             videoURL = yt_player.SearchForVideo(song_information)
             webbrowser.get().open(videoURL)
+
+        # google calendar poggers
+        elif 'calendar' in audio_data or 'events' in audio_data or 'schedule' in audio_data:
+            self.speak('Here are some upcoming events on your schedule:')
+            self.calendar.PrintCalendarEvents(calendar.GetEvents(calendar.GetCalendarList()[3]))
+            # still need to make it loop through each calendar oops
+
+        elif 'add' in audio_data and 'event' in audio_data and 'calendar' in audio_data:
+            # add an event to my primary calendar
+            # need: title, date, start time, end time
+            time_of_day = None # am or pm
+            time_of_end = None
+            self.speak('What\'s the occassion?')
+            title = self.listen()
+            self.speak('What day does the event happen?')
+            date = self.listen()
+            # test cases:
+            # 'tomorrow' November 10th, November 10, next friday, in two days, etc...
+
+            self.speak('When does the event start?')
+            start_time = self.listen()
+            # make sure to check if it's AM or PM
+            if 'a.m.' not in start_time or 'p.m.' not in start_time:
+                time_of_day = self.listen()
+            else:
+                if 'a.m.' in start_time:
+                    time_of_day = 'a.m.'
+                else:
+                    time_of_day = 'p.m.'
+            self.speak('When does the event end?')
+            end_time = self.listen()
+            # same as above lol
+            if 'a.m.' not in end_time or 'p.m.' not in end_time:
+                time_of_end = self.listen()
+            else:
+                if 'a.m.' in end_time:
+                    time_of_end = 'a.m.'
+                else:
+                    time_of_end = 'p.m.'
+
 
         # get a joke from pyjokes
         elif 'joke' in audio_data:
