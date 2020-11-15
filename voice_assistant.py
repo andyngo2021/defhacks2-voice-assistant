@@ -7,6 +7,8 @@ from gtts import gTTS
 import webbrowser
 # custom written modules
 from YTSearch import YouTubeAPI
+from inspirationalquotes import getInspirationalQuote
+import pyjokes
 
 # class for the voice assistant goes here
 
@@ -14,15 +16,19 @@ from YTSearch import YouTubeAPI
 Stuff to do:
     add speech to text
     Basic command ideas:
-        - what's my name
-        - search the internet
-        - play music from youtube
         - check for unread emails
         - make a reminder
         - add calendar events
         - weather api 
         - COVID facts bc why not
         - canvas api for schoolwork >.<
+'''
+
+'''
+Stuff that's "done" or can be touched up on later:
+    - search the internet
+    - play music from youtube
+    - give me an inspirational quote lol
 '''
 
 class VoiceAssistant:
@@ -51,7 +57,9 @@ class VoiceAssistant:
             audio_data = None
             while audio_data is None:
                 try:
-                    audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
+                    audio = self.recognizer.listen(source, phrase_time_limit=5)
+                    # still need to tweak the settings a bit 
+                    # try to make it so that it only activates when you speak
                     # timeout = how long the microphone listens for a prompt
                     # phrase_time_limit = how long the microphone will listen for (my mic is kinda bad and picks up a lot of noise)
                     audio_data = self.recognizer.recognize_google(audio)
@@ -72,7 +80,7 @@ class VoiceAssistant:
             self.speak('Hello World!')
 
         # add internet searching with webbrowser module
-        if 'search up' in audio_data:
+        elif 'search up' in audio_data:
             keywords = audio_data.split()[2:]
             # the first two words are probably 'search up', so we just need to look for whatever the user says afterwards
             # kind of fragile looking code tho LOL
@@ -84,7 +92,7 @@ class VoiceAssistant:
             webbrowser.get().open(url)
 
     # add play music with youtube
-        if 'play' in audio_data and ('song' in audio_data or 'music' in audio_data):
+        elif 'play' in audio_data and ('song' in audio_data or 'music' in audio_data):
             self.speak('What do you want me to play?')
             song_information = self.listen()
             # need to clean the song_information string later to remove (play and by)
@@ -92,6 +100,12 @@ class VoiceAssistant:
             videoURL = yt_player.SearchForVideo(song_information)
             webbrowser.get().open(videoURL)
 
+        # get a joke from pyjokes
+        elif 'tell me a joke' in audio_data:
+            self.speak(pyjokes.get_joke())
+        
+        elif 'quote' in audio_data:
+            self.speak(getInspirationalQuote())
 
 
         
