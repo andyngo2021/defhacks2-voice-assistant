@@ -1,14 +1,18 @@
-import speech_recognition as sr
 import time
 import os
-import playsound
 import random
-from gtts import gTTS
 import webbrowser
+# need to pip install
+import pyjokes
+from gtts import gTTS
+import playsound
+import speech_recognition as sr
 # custom written modules
 from YTSearch import YouTubeAPI
 from inspirationalquotes import getInspirationalQuote
-import pyjokes
+from COVIDstats import USACOVID
+from weatherapi import WeatherAPI
+
 
 # class for the voice assistant goes here
 
@@ -57,7 +61,7 @@ class VoiceAssistant:
             audio_data = None
             while audio_data is None:
                 try:
-                    audio = self.recognizer.listen(source, phrase_time_limit=5)
+                    audio = self.recognizer.listen(source, phrase_time_limit=10)
                     # still need to tweak the settings a bit 
                     # try to make it so that it only activates when you speak
                     # timeout = how long the microphone listens for a prompt
@@ -91,7 +95,7 @@ class VoiceAssistant:
             url += keywords # append keywords at the end
             webbrowser.get().open(url)
 
-    # add play music with youtube
+        # add play music with youtube
         elif 'play' in audio_data and ('song' in audio_data or 'music' in audio_data):
             self.speak('What do you want me to play?')
             song_information = self.listen()
@@ -106,8 +110,20 @@ class VoiceAssistant:
         
         elif 'quote' in audio_data:
             self.speak(getInspirationalQuote())
+        
+        elif 'data' in audio_data and ('covid' in audio_data or 'pandemic' in audio_data):
+            self.speak(USACOVID())
 
+        elif 'weather' in audio_data or 'forecast' in audio_data:
+            w = WeatherAPI()
+            if 'forecast' in audio_data or 'week' in audio_data:
+                self.speak(w.getWeeklyForecast())
+            elif 'current' in audio_data:
+                self.speak(w.getCurrentWeather())
 
+        # might remove later idk
+        elif 'quit' in audio_data:
+            exit()
         
 
 
