@@ -14,7 +14,7 @@ class CalendarEvent:
         self.time_frame = self.GetTimeFrame(self.start, self.end)
 
     def __str__(self):
-        return f"{self.title} | {self.time_frame} | {self.location}"
+        return f"{self.title.strip()} | {self.time_frame} | {self.location}"
 
     def GetTimeFrame(self, start, end):
         # both start and end should be in the same form as formatted_data
@@ -83,8 +83,10 @@ class GoogleCalendarAPI:
                 end = self.FormatTime(event['end']['dateTime'])
                 location = event['location']
                 event_data = CalendarEvent(title, start, end, location)
+                # print(event_data)
                 if self.CheckIfNotHappenedYet(event_data):
                     calendar_events.append(event_data)
+                    # print(f'Amount of upcoming events: {len(calendar_events)}')
 
             page_token = events.get('nextPageToken')
             if not page_token:
@@ -95,6 +97,9 @@ class GoogleCalendarAPI:
         for event in calendar_events:
             print(event)
     
+    def GetUpcomingEvents(self):
+        self.PrintCalendarEvents(self.GetEvents(self.GetCalendarList()[3]))
+
     def FormatTime(self, data):
         # given in this format: 2020-11-14T08:30:00-08:00
         #                       0123456789
@@ -121,6 +126,9 @@ class GoogleCalendarAPI:
         month = current_time[5:7]
         day = current_time[8:10]
         time = current_time[11:16]
+        if int(time[0:2]) > 12:
+            formatted_hour = str(int(time[0:2])%12).zfill(2)
+            time = formatted_hour + time[2:]
         time_of_day = datetime.datetime.now().strftime('%p')
         
         formatted_data = month, day, year, time, time_of_day
@@ -130,6 +138,7 @@ class GoogleCalendarAPI:
     def CheckIfNotHappenedYet(self, event):
         # want to use some date module to check if an event has occured or not
         # the CompareTwoTimes will return true IF first event occurs before the next event
+        # print(f'Comparing now {self.GetCurrentTime()} and {event.start}')
         return self.CompareTwoTimes(self.GetCurrentTime(), event.start)
 
 

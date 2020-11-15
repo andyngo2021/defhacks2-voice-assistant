@@ -21,8 +21,6 @@ Stuff to do:
     Basic command ideas:
         - check for unread emails
         - make a reminder
-        - add calendar events
-            -make a new event
         - add multimedia commands (control system volume, next song, previous song, etc.)
 '''
 
@@ -33,6 +31,7 @@ Stuff that's "done" or can be touched up on later:
     - give me an inspirational quote lol
     - COVID facts bc why not
     - weather api 
+    - add calendar events
     -get a list of upcoming events
 '''
 
@@ -162,7 +161,7 @@ class VoiceAssistant:
         # google calendar poggers
         elif 'calendar' in audio_data or 'upcoming events' in audio_data or 'schedule' in audio_data:
             self.speak('Here are some upcoming events on your schedule:')
-            self.calendar.PrintCalendarEvents(self.calendar.GetEvents(self.calendar.GetCalendarList()[3]))
+            self.calendar.GetUpcomingEvents()
             # still need to make it loop through each calendar oops
 
         # get a joke from pyjokes
