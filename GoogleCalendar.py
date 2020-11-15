@@ -4,6 +4,34 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import googleapiclient.discovery 
 
+class CalendarEvent:
+    def __init__(self, title, start, end, location=None):
+        self.title = title
+        self.start = start
+        self.end = end
+        self.location = location
+        self.time_frame = self.GetTimeFrame(self.start, self.end)
+
+    def __str__(self):
+        return f"{self.title} | {self.time_frame} | {self.location}"
+
+    def GetTimeFrame(self, start, end):
+        # both start and end should be in the same form as formatted_data
+        formatted_timeframe = None
+        sameDay = False
+        start_month, start_day, start_year, start_time, start_time_of_day = start
+        end_month, end_day, end_year, end_time, end_time_of_day = end
+        if start_month == end_month and start_day == end_day and end_year == end_year:
+            sameDay = True
+        # if same day: 11/14/2020 (08:30 AM - 09:00 AM)
+        # else: 11/14/2020 (08:30 AM) - 11/16/2020 (09:30 AM) 
+        if sameDay:
+            formatted_timeframe = f'{start_month}/{start_day}/{start_year} ({start_time} {start_time_of_day} - {end_time} {end_time_of_day})'
+        else:
+            formatted_timeframe = f'{start_month}/{start_day}/{start_year} ({start_time} {start_time_of_day}) - {end_month}/{end_day}/{end_year} ({end_time} {end_time_of_day})'
+       
+        return formatted_timeframe
+
 class GoogleCalendarAPI:
     def __init__(self):
         self.credentials = None
@@ -47,11 +75,14 @@ class GoogleCalendarAPI:
         while True:
             events = self.calendar.events().list(calendarId=calendar_id, pageToken=page_token, singleEvents=True, orderBy='startTime').execute()
             for event in events['items']:
-                # print(event)
-                start_time = self.FormatTime(event['start']['dateTime'])
-                end_time = self.FormatTime(event['end']['dateTime'])
-                time_frame = self.GetTimeFrame(start_time, end_time)
-                print(f"{event['summary']} | {time_frame} | {event['location']}")
+                # title, start, end, location=None 
+                title = event['summary']
+                start = self.FormatTime(event['start']['dateTime'])
+                end = self.FormatTime(event['end']['dateTime'])
+                location = event['location']
+                event_data = CalendarEvent(title, start, end, location)
+                print(event_data)
+
             page_token = events.get('nextPageToken')
             if not page_token:
                 break
@@ -75,29 +106,13 @@ class GoogleCalendarAPI:
         formatted_data = month, day, year, time, time_of_day
         return formatted_data
 
-    def GetTimeFrame(self, start, end):
-        # both start and end should be in the same form as formatted_data
-        formatted_timeframe = None
-        sameDay = False
-        start_month, start_day, start_year, start_time, start_time_of_day = start
-        end_month, end_day, end_year, end_time, end_time_of_day = end
-        if start_month == end_month and start_day == end_day and end_year == end_year:
-            sameDay = True
-        # if same day: 11/14/2020 (08:30 AM - 09:00 AM)
-        # else: 11/14/2020 (08:30 AM) - 11/16/2020 (09:30 AM) 
-        if sameDay:
-            formatted_timeframe = f'{start_month}/{start_day}/{start_year} ({start_time} {start_time_of_day} - {end_time} {end_time_of_day})'
-        else:
-            formatted_timeframe = f'{start_month}/{start_day}/{start_year} ({start_time} {start_time_of_day}) - {end_month}/{end_day}/{end_year} ({end_time} {end_time_of_day})'
-       
-        return formatted_timeframe
-
     def CheckIfNotHappenedYet(self, event):
         # want to use some date module to check if an event has occured or not
         pass
 
     def CompareTwoTimes(self, time_1, time_2):
         # compare two times to see which one came first
+        # helper function for the CheckIfNOtHappeendYet function
         pass
         
 
