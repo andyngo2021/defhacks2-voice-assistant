@@ -6,8 +6,8 @@ Running on Python 3.8.5 64-bit
 
 <br>
 
-## **Python Virtual Assistant** ##
----------------
+# **Python Virtual Assistant** #
+
 ### **Meet Bob** (or whatever you want to name it) ###
 Bob is a pretty basic voice assistant who strives to reach the same level as Siri-sama and Alexa-chan. Unfortunately, he wasn't programmed by someone who really knew what they doing so he can only do super basic tasks :((
 
@@ -71,7 +71,6 @@ I happened to stumble across a [random YouTube video](https://youtu.be/x8xjj6cR9
 <br>
 
 ## **Miscellaneous Stuff** ##
----
 
 ### **Dependencies** ###
 pip install these!!

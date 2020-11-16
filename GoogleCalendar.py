@@ -70,35 +70,68 @@ class GoogleCalendarAPI:
                 break
         return calendarIDs # (name, id)
 
-    def GetEvents(self, calendar_info): # calendar info contains name, and ID
-        calendar_name, calendar_id = calendar_info
+    def GetEvents(self, all_calendars): # calendar info contains name, and ID
+        # print(all_calendars)
         calendar_events = []
-        page_token = None
-        while True:
-            events = self.calendar.events().list(calendarId=calendar_id, pageToken=page_token, singleEvents=True, orderBy='startTime').execute()
-            for event in events['items']:
-                # title, start, end, location=None 
-                title = event['summary']
-                start = self.FormatTime(event['start']['dateTime'])
-                end = self.FormatTime(event['end']['dateTime'])
-                location = event['location']
-                event_data = CalendarEvent(title, start, end, location)
-                # print(event_data)
-                if self.CheckIfNotHappenedYet(event_data):
-                    calendar_events.append(event_data)
-                    # print(f'Amount of upcoming events: {len(calendar_events)}')
+        for calendar_info in all_calendars:
+            calendar_name, calendar_id = calendar_info
+            page_token = None
+            while True:
+                events = self.calendar.events().list(calendarId=calendar_id, pageToken=page_token, singleEvents=True, orderBy='startTime').execute()
+                for event in events['items']:
+                    # print(event)
+                    # title, start, end, location=None 
+                    title = event['summary']
+                    try:
+                        start = self.FormatTime(event['start']['dateTime'])
+                        end = self.FormatTime(event['end']['dateTime'])
+                    except:
+                        start = None
+                        end = None
+                    location = None
+                    try:
+                        location = event['location']
+                    except:
+                        location = ''
+                    event_data = CalendarEvent(title, start, end, location)
+                    # print(event_data)
+                    if self.CheckIfNotHappenedYet(event_data):
+                        calendar_events.append(event_data)
+                        # print(f'Amount of upcoming events: {len(calendar_events)}')
 
-            page_token = events.get('nextPageToken')
-            if not page_token:
-                break
+                page_token = events.get('nextPageToken')
+                if not page_token:
+                    break
+        # sort here
+        calendar_events = sorted(calendar_events, key=self.SortingKeyForTimes)
         return calendar_events
     
+    def SortingKeyForTimes(self, event):
+        # input = formatted(month, day, year, time, time_of_day)
+        # return it in 24 hour time
+        time = event.start
+        month = time[0]
+        day = time[1]
+        year = time[2]
+        hour_min = time[3]
+        time_of_day = time[4]
+        if time_of_day == 'p.m.' and int(hour_min[0:2]) < 12:
+            hour = str(int(hour_min[0:2])+12)
+            hour_min = hour + hour_min[2:]
+        if time_of_day == 'a.m.' and int(hour_min[0:2]) == 12:
+            hour = '00'
+            hour_min = hour + hour_min[2:]
+        return year, month, day, hour_min
+            
+
     def PrintCalendarEvents(self, calendar_events):
         for event in calendar_events:
             print(event)
     
     def GetUpcomingEvents(self):
-        self.PrintCalendarEvents(self.GetEvents(self.GetCalendarList()[3]))
+        calendars = self.GetCalendarList()
+        target = [calendars[0], calendars[3]]
+        self.PrintCalendarEvents(self.GetEvents(target))
 
     def FormatTime(self, data):
         # given in this format: 2020-11-14T08:30:00-08:00
