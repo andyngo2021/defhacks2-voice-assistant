@@ -84,7 +84,7 @@ class VoiceAssistant:
             webbrowser.get().open(videoURL)
 
 
-        elif 'add event' in audio_data and ('calendar' in audio_data or 'schedule' in audio_data):
+        elif 'add' in audio_data and ('calendar' in audio_data or 'schedule' in audio_data or 'event' in audio_data):
             # add an event to my primary calendar
             # need: title, date, start time, end time
             time_of_day = None # am or pm
@@ -137,7 +137,7 @@ class VoiceAssistant:
             self.calendar.MakeNewEvent(title, month, day, year, start_time, time_of_day, end_time, time_of_end)
 
         # google calendar poggers
-        elif 'calendar' in audio_data or 'upcoming events' in audio_data or 'schedule' in audio_data:
+        elif 'show' in audio_data and ('upcoming events' in audio_data or 'schedule' in audio_data or 'calendar' in audio_data):
             self.speak('Here are some upcoming events on your schedule:')
             self.calendar.GetUpcomingEvents()
             # still need to make it loop through each calendar oops
@@ -158,6 +158,9 @@ class VoiceAssistant:
                 self.speak(w.getWeeklyForecast())
             elif 'current' in audio_data:
                 self.speak(w.getCurrentWeather())
+
+        elif 'thank you' in audio_data:
+            self.speak('You\'re welcome!')
 
         # might remove later idk
         elif 'quit' in audio_data or 'exit' in audio_data:

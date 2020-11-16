@@ -72,6 +72,11 @@ I happened to stumble across a [random YouTube video](https://youtu.be/x8xjj6cR9
 
 ## **Miscellaneous Stuff** ##
 
+### **Scuffed Demo Video** ###
+[Demo Video Link](https://youtu.be/haZkA2EqVH4)
+I messed up recording this video like 10 times this was the best I could do. Sorry I couldn't show all of Bob's features T^T
+
+
 ### **Dependencies** ###
 pip install these!!
 * pyjokes 
