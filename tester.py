@@ -1,5 +1,4 @@
 from gtts import gTTS
-import playsound
 import speech_recognition as sr
 
 recognizer = sr.Recognizer()

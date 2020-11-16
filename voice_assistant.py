@@ -5,7 +5,6 @@ import webbrowser
 # need to pip install
 import pyjokes
 from gtts import gTTS
-import playsound
 import speech_recognition as sr
 # custom written modules
 from YTSearch import YouTubeAPI
@@ -13,27 +12,6 @@ from inspirationalquotes import getInspirationalQuote
 from COVIDstats import USACOVID
 from weatherapi import WeatherAPI
 from GoogleCalendar import GoogleCalendarAPI
-
-
-'''
-Stuff to do:
-    add speech to text
-    Basic command ideas:
-        - check for unread emails
-        - make a reminder
-        - add multimedia commands (control system volume, next song, previous song, etc.)
-'''
-
-'''
-Stuff that's "done" or can be touched up on later:
-    - search the internet
-    - play music from youtube
-    - give me an inspirational quote lol
-    - COVID facts bc why not
-    - weather api 
-    - add calendar events
-    -get a list of upcoming events
-'''
 
 class VoiceAssistant:
     def __init__(self, name, mode):
