@@ -13,7 +13,7 @@ Bob is a pretty basic voice assistant who strives to reach the same level as Sir
 
 *I still love Bob tho <3*
 
-Bob works by using a speech recognition API and listens for **keywords** to figure out what to do. There's a [list of keywords](#**Cheat-Sheet-for-Bob's-Commands**) you can refer to down below. :)
+Bob works by using a speech recognition API and listens for **keywords** to figure out what to do. There's a [list of keywords](#cheat-sheet-for-bobs-commands) you can refer to down below. :)
 
 <br>
 
@@ -45,7 +45,6 @@ Not much LOL But here are some of the tasks he can do:
 <br>
 
 ## **Cheat Sheet for Bob's Commands** ##
----
 You could just look through the code in voice_assistant.py but here's a cool table you could use to get a fast summary of how to use Bob.
 
 Command | Command Description | Keywords Bob Listens For | Example
@@ -62,7 +61,6 @@ Get a joke | Bob tells you a corny programming joke | 'joke' | *"tell me a joke"
 <br>
 
 ## **About the Author** ##
----
 Hello! My name is Andy and I'm a high school student from Southern California. This was my first hackathon and I was super pumped to be a part of it! I picked up Python last year and messed around the basics in my free time but I never really built anything cool until now.
 
 ### **Backstory** ###
